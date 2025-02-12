@@ -113,7 +113,7 @@ jobs:
       - name: Build and Push Docker Image
         id: build-and-push-docker-image
         uses: docker/build-push-action@v6
-        if: ${{ steps.versions.outputs.image_exists == 'false' }}
+        if: ${{ steps.image_check.outputs.image_exists == 'false' }}
         with:
           context: .
           push: true
@@ -131,7 +131,7 @@ jobs:
       # security for people who consume the image
       - name: Generate Artifact Attestation
         uses: actions/attest-build-provenance@v1
-        if: ${{ steps.versions.outputs.image_exists == 'false' }}
+        if: ${{ steps.image_check.outputs.image_exists == 'false' }}
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.build-and-push-docker-image.outputs.digest }}
