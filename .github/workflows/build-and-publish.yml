@@ -66,8 +66,32 @@ jobs:
           echo "COMFYUI_VERSION=$(git ls-remote --tags --refs https://github.com/comfyanonymous/ComfyUI.git | grep -o 'v.*' | sort -V | tail -1) >> "$GITHUB_ENV"
           echo "COMFYUI_MANAGER_VERSION=$(git ls-remote --tags --refs https://github.com/ltdrdata/ComfyUI-Manager.git | grep -o 'v.*' | sort -V | tail -1) >> "$GITHUB_ENV"
       
+      - name: Check if image exists on GHCR
+        id: image_check
+        run: |
+          ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
+          TAGS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
+            https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list)
+          echo "TAGS: $TAGS"
+
+          ## Check if TAGS is empty or null
+          if [[ -z "$TAGS" || "$TAGS" == "null" ]]; then
+            echo "No tags found, treating as image not existing."
+            echo "image_exists=false" >> $GITHUB_OUTPUT
+          else
+            ## Check if the specific tag already exists
+            if echo "$TAGS" | jq -e --arg TAG "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" '.tags | index($TAG)'; then
+              echo "Image with tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }} already exists."
+              echo "image_exists=true" >> $GITHUB_OUTPUT
+            else
+              echo "Image with tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }} not found."
+              echo "image_exists=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
       - name: Set up tags
         id: tags
+        if: ${{ steps.versions.outputs.image_exists == 'false' }}
         run: |
           if [ "${{ matrix.PYTORCH_VERSION }}" = "${{ env.LATEST_PYTORCH_VERSION }}" ]; then
             echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" >> "$GITHUB_OUTPUT"
@@ -88,6 +112,7 @@ jobs:
       - name: Build and Push Docker Image
         id: build-and-push-docker-image
         uses: docker/build-push-action@v6
+        if: ${{ steps.versions.outputs.image_exists == 'false' }}
         with:
           context: .
           push: true
@@ -95,10 +120,7 @@ jobs:
             PYTORCH_IMG_VERSION=${{ matrix.PYTORCH_VERSION }}
             COMFYUI_VERSION=${{ env.COMFYUI_VERSION }}
             COMFYUI_MANAGER_VERSION=${{ env.COMFYUI_MANAGER_VERSION }}
-          tags: |
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}
-            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}
+          tags: ${{ steps.tags.outputs.tags }}
           labels: |
             org.opencontainers.image.title=ComfyUI Docker
             org.opencontainers.image.authors=TheRealPSV
@@ -108,6 +130,7 @@ jobs:
       # security for people who consume the image
       - name: Generate Artifact Attestation
         uses: actions/attest-build-provenance@v1
+        if: ${{ steps.versions.outputs.image_exists == 'false' }}
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.build-and-push-docker-image.outputs.digest }}
