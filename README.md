@@ -18,7 +18,7 @@ Docker Compose is as simple as creating a docker-compose.yml file where you want
 ```
 services:
   stable-diffusion-comfyui:
-    image: ghcr.io/TheRealPSV/comfyui-docker:latest
+    image: ghcr.io/therealpsv/comfyui-docker:latest
     container_name: stable-diffusion-comfyui
     volumes:
       - ./sd-comfyui-data/models:/opt/comfyui/models
@@ -83,7 +83,7 @@ docker run \
     --publish 8188:8188 \
     --runtime nvidia \
     --gpus all \
-    ghcr.io/TheRealPSV/comfyui-docker:latest
+    ghcr.io/therealpsv/comfyui-docker:latest
 ```
 
 Please note, that the `<path/to/models/folder>` and `<path/to/custom/nodes/folder>` must be replaced with paths to directories on the host system where the models and custom nodes will be stored, e.g., `$HOME/.comfyui/models` and `$HOME/.comfyui/custom-nodes`, which can be created like so: `mkdir -p $HOME/.comfyui/{models,custom-nodes}`.
@@ -117,7 +117,7 @@ To update ComfyUI Docker to the latest version you have to first stop the runnin
 docker stop comfyui
 docker rm comfyui
 
-docker pull ghcr.io/TheRealPSV/comfyui-docker:latest
+docker pull ghcr.io/therealpsv/comfyui-docker:latest
 docker image prune # Optionally remove dangling images
 
 docker run \
@@ -131,7 +131,7 @@ docker run \
     --publish 8188:8188 \
     --runtime nvidia \
     --gpus all \
-    ghcr.io/TheRealPSV/comfyui-docker:latest
+    ghcr.io/therealpsv/comfyui-docker:latest
 ```
 
 ## Building
@@ -139,8 +139,8 @@ docker run \
 If you want to use the bleeding edge development version of the Docker image, you can also clone the repository and build the image yourself:
 
 ```shell
-git clone https://github.com/TheRealPSV/comfyui-docker.git
-docker build --tag TheRealPSV/comfyui-docker:latest comfyui-docker
+git clone https://github.com/therealpsv/comfyui-docker.git
+docker build --tag therealpsv/comfyui-docker:latest comfyui-docker
 ```
 
 Now, a container can be started like so:
@@ -157,12 +157,12 @@ docker run \
     --publish 8188:8188 \
     --runtime nvidia \
     --gpus all \
-    TheRealPSV/comfyui-docker:latest
+    therealpsv/comfyui-docker:latest
 ```
 
 ## Versions 
 
-You can browse different variations and versions of this image here: https://github.com/TheRealPSV/comfyui-docker/pkgs/container/comfyui-docker/versions?filters%5Bversion_type%5D=tagged
+You can browse different variations and versions of this image here: https://github.com/therealpsv/comfyui-docker/pkgs/container/comfyui-docker/versions?filters%5Bversion_type%5D=tagged
 
 Currently, each version is built nightly with the latest stable release of ComfyUI and ComfyUI Manager if either is updated. The images are currently based on 3 versions of the official PyTorch image:
 - 2.5.1-cuda11.8-cudnn9
