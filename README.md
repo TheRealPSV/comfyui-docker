@@ -140,7 +140,7 @@ If you want to use the bleeding edge development version of the Docker image, yo
 
 ```shell
 git clone https://github.com/TheRealPSV/comfyui-docker.git
-docker build --tag lecode/comfyui-docker:latest comfyui-docker
+docker build --tag TheRealPSV/comfyui-docker:latest comfyui-docker
 ```
 
 Now, a container can be started like so:
@@ -157,7 +157,7 @@ docker run \
     --publish 8188:8188 \
     --runtime nvidia \
     --gpus all \
-    lecode/comfyui-docker:latest
+    TheRealPSV/comfyui-docker:latest
 ```
 
 ## Versions 
