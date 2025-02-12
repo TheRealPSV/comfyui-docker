@@ -1,6 +1,6 @@
 
 # A workflow, which builds the ComfyUI Docker image and publishes it to the GitHub Container Registry
-name: Create and publish a Docker image
+name: Build and Publish Docker Images
 
 # Configures this workflow to run when a tag was pushed to the repository that matches the pattern "v[0-9]+.[0-9]+.[0-9]+", which is a semantic
 # versioning pattern; this token will be created when a new release is created; the release event cannot be used, because the docker/metadata-action
