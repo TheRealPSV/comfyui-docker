@@ -63,8 +63,8 @@ jobs:
       - name: Extract ComfyUI & ComfyUI Manager Versions
         id: versions
         run: |
-          echo "COMFYUI_VERSION=$(git ls-remote --tags --refs https://github.com/comfyanonymous/ComfyUI.git | grep -o 'v.*' | sort -V | tail -1) >> "$GITHUB_ENV"
-          echo "COMFYUI_MANAGER_VERSION=$(git ls-remote --tags --refs https://github.com/ltdrdata/ComfyUI-Manager.git | grep -o -E '[0-9]+\..*' | sort -V | tail -1) >> "$GITHUB_ENV"
+          echo "COMFYUI_VERSION=$(git ls-remote --tags --refs https://github.com/comfyanonymous/ComfyUI.git | grep -o 'v.*' | sort -V | tail -1)" >> "$GITHUB_ENV"
+          echo "COMFYUI_MANAGER_VERSION=$(git ls-remote --tags --refs https://github.com/ltdrdata/ComfyUI-Manager.git | grep -o -E '[0-9]+\..*' | sort -V | tail -1)" >> "$GITHUB_ENV"
       
       - name: Check if image exists on GHCR
         id: image_check
