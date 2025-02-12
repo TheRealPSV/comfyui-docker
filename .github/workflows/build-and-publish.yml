@@ -44,7 +44,7 @@ jobs:
     steps:
       - name: lowercase IMAGE_NAME
         run: |
-          echo "IMAGE_NAME=${${{ env.IMAGE_NAME }}@L}" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=${${{ env.IMAGE_NAME }},,}" >> "$GITHUB_ENV"
 
       # Checks out the repository so that the workflow can access the files in the repository
       - name: Checkout repository
