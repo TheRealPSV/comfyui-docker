@@ -14,7 +14,6 @@ on:
 # which is set to the name of the repository
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
 
 # This workflow has a single job, which builds the Docker image and publishes it to the GitHub Container Registry
 jobs:
@@ -42,9 +41,15 @@ jobs:
     # This job 1) checks out the repository, 2) logs in to the GitHub Container Registry, 3) extracts metadata for the Docker image, 4) builds and
     # pushes the Docker image, and 5) generates an artifact attestation for the image
     steps:
-      - name: lowercase IMAGE_NAME
+      - name: lowercase repo name
+        id: lower_repo_name
+        uses: Entepotenz/change-string-case-action-min-dependencies@v1
+        with:
+          string: ${{ github.repository }}
+
+      - name: set IMAGE_NAME
         run: |
-          echo "IMAGE_NAME=${${{ env.IMAGE_NAME }},,}" >> "$GITHUB_ENV"
+          echo "IMAGE_NAME=${{ steps.lower_repo_name.outputs.lowercase }}" >> "$GITHUB_ENV"
 
       # Checks out the repository so that the workflow can access the files in the repository
       - name: Checkout repository
