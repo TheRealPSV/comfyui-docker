@@ -18,8 +18,7 @@ Docker Compose is as simple as creating a docker-compose.yml file where you want
 ```
 services:
   stable-diffusion-comfyui:
-    build:
-      context: /mnt/ssd-data/aitools/sd-comfyui/
+    image: ghcr.io/TheRealPSV/comfyui-docker:latest
     container_name: stable-diffusion-comfyui
     volumes:
       - ./sd-comfyui-data/models:/opt/comfyui/models
@@ -161,6 +160,11 @@ docker run \
     lecode/comfyui-docker:latest
 ```
 
-## License
+## Versions 
 
-The ComfyUI Docker image is licensed under the [MIT License](LICENSE). [ComfyUI](https://github.com/comfyanonymous/ComfyUI/blob/master/LICENSE) and the [ComfyUI Manager](https://github.com/ltdrdata/ComfyUI-Manager/blob/main/LICENSE.txt) are both licensed under the GPL 3.0 license.
+You can browse different variations and versions of this image here: https://github.com/TheRealPSV/comfyui-docker/pkgs/container/comfyui-docker/versions?filters%5Bversion_type%5D=tagged
+
+Currently, each version is built nightly with the latest stable release of ComfyUI and ComfyUI Manager if either is updated. The images are currently based on 3 versions of the official PyTorch image:
+- 2.5.1-cuda11.8-cudnn9
+- 2.5.1-cuda12.1-cudnn9
+- 2.5.1-cuda12.4-cudnn9 (default if you choose the `latest` tag)
