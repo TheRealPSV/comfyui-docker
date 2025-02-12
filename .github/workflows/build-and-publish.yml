@@ -92,7 +92,7 @@ jobs:
 
       - name: Set up tags
         id: tags
-        if: ${{ steps.versions.outputs.image_exists == 'false' }}
+        if: ${{ steps.image_check.outputs.image_exists == 'false' }}
         run: |
           if [ "${{ matrix.PYTORCH_VERSION }}" = "${{ env.LATEST_PYTORCH_VERSION }}" ]; then
             echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" >> "$GITHUB_OUTPUT"
