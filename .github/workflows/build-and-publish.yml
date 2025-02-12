@@ -79,8 +79,8 @@ jobs:
         uses: tyriis/docker-image-tag-exists@v2.1.0
         with:
           registry: ghcr.io
-          repository: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}"
-          tag: "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
+          repository: "${{ env.IMAGE_NAME}}"
+          tag: "${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
 
       - name: Set up tags
         id: tags
