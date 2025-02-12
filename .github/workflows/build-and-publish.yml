@@ -77,26 +77,25 @@ jobs:
       - name: Check if image exists on GHCR
         id: image_check
         run: |
-          echo "image_exists=false" >> "$GITHUB_OUTPUT"
-          # ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
-          # TAGS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
-          #   https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list)
-          # echo "TAGS: $TAGS"
+          ENCODED_TOKEN=$(echo -n "${{ secrets.GITHUB_TOKEN }}" | base64)
+          TAGS=$(curl -s -H "Authorization: Bearer ${ENCODED_TOKEN}" \
+            https://ghcr.io/v2/${{ env.IMAGE_NAME }}/tags/list)
+          echo "TAGS: $TAGS"
 
-          # ## Check if TAGS is empty or null
-          # if [[ -z "$TAGS" || "$TAGS" == "null" ]]; then
-          #   echo "No tags found, treating as image not existing."
-          #   echo "image_exists=false" >> "$GITHUB_OUTPUT"
-          # else
-          #   ## Check if the specific tag already exists
-          #   if echo "$TAGS" | jq -e --arg TAG "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" '.tags | index($TAG)'; then
-          #     echo "Image with tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }} already exists."
-          #     echo "image_exists=true" >> "$GITHUB_OUTPUT"
-          #   else
-          #     echo "Image with tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }} not found."
-          #     echo "image_exists=false" >> "$GITHUB_OUTPUT"
-          #   fi
-          # fi
+          ## Check if TAGS is empty or null
+          if [[ -z "$TAGS" || "$TAGS" == "null" ]]; then
+            echo "No tags found, treating as image not existing."
+            echo "image_exists=false" >> "$GITHUB_OUTPUT"
+          else
+            ## Check if the specific tag already exists
+            if echo "$TAGS" | jq -e --arg TAG "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" '.tags | index($TAG)'; then
+              echo "Image with tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }} already exists."
+              echo "image_exists=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "Image with tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }} not found."
+              echo "image_exists=false" >> "$GITHUB_OUTPUT"
+            fi
+          fi
 
       - name: Set up tags
         id: tags
