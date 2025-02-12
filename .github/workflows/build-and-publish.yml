@@ -88,7 +88,7 @@ jobs:
             echo "image_exists=false" >> "$GITHUB_OUTPUT"
           else
             ## Check if the specific tag already exists
-            if echo "$TAGS" | jq -e --arg TAG "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" '.tags | index($TAG)'; then
+            if echo "$TAGS" | jq -e --arg TAG "${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" '.tags | index($TAG)'; then
               echo "Image with tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }} already exists."
               echo "image_exists=true" >> "$GITHUB_OUTPUT"
             else
