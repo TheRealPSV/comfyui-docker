@@ -10,21 +10,81 @@ To enable the usage of NVIDIA GPUs, the NVIDIA Container Toolkit must be install
 
 ## Installation
 
-The ComfyUI Docker image is available from the [GitHub Container Registry](https://ghcr.io). Installing ComfyUI is as simple as pulling the image and starting a container, which can be achieved using the following command:
+The ComfyUI Docker image is available from the [GitHub Container Registry](https://ghcr.io). 
+
+### Docker Compose (Recommended)
+
+Docker Compose is as simple as creating a docker-compose.yml file where you want to save your volumes (files).
+```
+services:
+  stable-diffusion-comfyui:
+    build:
+      context: /mnt/ssd-data/aitools/sd-comfyui/
+    container_name: stable-diffusion-comfyui
+    volumes:
+      - ./sd-comfyui-data/models:/opt/comfyui/models
+      - ./sd-comfyui-data/custom_nodes:/opt/comfyui/custom_nodes
+      - ./sd-comfyui-data/pipcache:/root/.cache/pip
+      - ./sd-comfyui-data/input:/opt/comfyui/input
+      - ./sd-comfyui-data/workflows:/opt/comfyui/user/default/workflows
+      - ./sd-comfyui-data/manager:/opt/comfyui/user/default/ComfyUI-Manager
+      - ./sd-comfyui-data/customrequirements:/opt/customrequirements
+      - ./sd-comfyui-data/output:/root/ComfyUI/output
+    stop_signal: SIGKILL
+    tty: true
+    restart: unless-stopped
+    ports:
+      - "8188:8188"
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - CLI_ARGS=--disable-auto-launch
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities:
+                - gpu
+                - compute
+                - utility
+```
+
+After saving the file you can simply run `docker compose up -d` to run the container.
+
+#### Volumes
+- models: where your model files are stored
+- custom_nodes: where your custom_nodes are saved to
+- pipcache: caches saved python pip modules to disk to speed up restarts
+- input: where any input files are saved by comfyui
+- workflows: your saved workflow files
+- manager: ComfyUI Manager configuration
+- customrequirements: ComfyUI Manager's "Install PIP Module" option doesn't work properly in this container. Instead, you can place your requested modules in a requirements.txt file in this folder, matching the [pip requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/) (typically just the name of the module, one per line), and the container will install it for you as it boots up.
+- output: Your ComfyUI outputs
+
+#### Environment Variables (Optional)
+- PUID: the user id of your host machine linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user. You can find this by running `id -u`.
+- PGID: the group id of your host machine linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user's group. You can find this by running `id -g`.
+- CLI_ARGS: any arguments you want to pass to ComfyUI when it runs.
+
+### Docker CLI
+
+Installing ComfyUI is as simple as pulling the image and starting a container, which can be achieved using the following command:
 
 ```shell
 docker run \
     --name comfyui \
     --detach \
     --restart unless-stopped \
-    --env USER_ID="$(id -u)" \
-    --env GROUP_ID="$(id -g)" \
+    --env PUID="$(id -u)" \
+    --env PGID="$(id -g)" \
     --volume "<path/to/models/folder>:/opt/comfyui/models:rw" \
     --volume "<path/to/custom/nodes/folder>:/opt/comfyui/custom_nodes:rw" \
     --publish 8188:8188 \
     --runtime nvidia \
     --gpus all \
-    ghcr.io/lecode-official/comfyui-docker:latest
+    ghcr.io/TheRealPSV/comfyui-docker:latest
 ```
 
 Please note, that the `<path/to/models/folder>` and `<path/to/custom/nodes/folder>` must be replaced with paths to directories on the host system where the models and custom nodes will be stored, e.g., `$HOME/.comfyui/models` and `$HOME/.comfyui/custom-nodes`, which can be created like so: `mkdir -p $HOME/.comfyui/{models,custom-nodes}`.
@@ -41,9 +101,16 @@ docker rm comfyui
 ```
 
 > [!WARNING]
-> While the custom nodes themselves are installed outside of the container, their requirements are installed inside of the container. This means that stopping and removing the container will remove the installed requirements. When the container is started again, the requirements will be automatically installed, but this may, depending on the number of custom nodes and their requirements, take some time.
+> While the custom nodes themselves are installed outside of the container, their requirements are installed inside of the container. This means that stopping and removing the container will remove the installed requirements. When the container is started again, the requirements will be automatically installed, but this may, depending on the number of custom nodes and their requirements, take some time. Using the pipcache volume speeds up the process by saving nodes to your local storage, so it doesn't have to redownload them.
 
 ## Updating
+
+### Docker Compose
+
+In the folder with your `docker-compose.yml` file, simply run the following command:
+`docker compose pull && docker compose down && docker compose up -d`
+
+### Docker CLI
 
 To update ComfyUI Docker to the latest version you have to first stop the running container, then pull the new version, optionally remove dangling images, and then restart the container:
 
@@ -51,7 +118,7 @@ To update ComfyUI Docker to the latest version you have to first stop the runnin
 docker stop comfyui
 docker rm comfyui
 
-docker pull ghcr.io/lecode-official/comfyui-docker:latest
+docker pull ghcr.io/TheRealPSV/comfyui-docker:latest
 docker image prune # Optionally remove dangling images
 
 docker run \
@@ -65,7 +132,7 @@ docker run \
     --publish 8188:8188 \
     --runtime nvidia \
     --gpus all \
-    ghcr.io/lecode-official/comfyui-docker:latest
+    ghcr.io/TheRealPSV/comfyui-docker:latest
 ```
 
 ## Building
@@ -73,7 +140,7 @@ docker run \
 If you want to use the bleeding edge development version of the Docker image, you can also clone the repository and build the image yourself:
 
 ```shell
-git clone https://github.com/lecode-official/comfyui-docker.git
+git clone https://github.com/TheRealPSV/comfyui-docker.git
 docker build --tag lecode/comfyui-docker:latest comfyui-docker
 ```
 

@@ -50,22 +50,30 @@ do
     fi
 done
 
+# Allow installing custom pip requirements if a file is mounted to /opt/customrequirements/requirements.txt
+if [ -f "/opt/customrequirements/requirements.txt" ];
+then
+    echo "Installing custom requirements..."
+    pip install --requirement "/opt/customrequirements/requirements.txt"
+fi
+
 # Under normal circumstances, the container would be run as the root user, which is not ideal, because the files that are created by the container in
 # the volumes mounted from the host, i.e., custom nodes and models downloaded by the ComfyUI Manager, are owned by the root user; the user can specify
 # the user ID and group ID of the host user as environment variables when starting the container; if these environment variables are set, a non-root
 # user with the specified user ID and group ID is created, and the container is run as this user
-if [ -z "$USER_ID" ] || [ -z "$GROUP_ID" ];
+if [ -z "$PUID" ] || [ -z "$PGID" ];
 then
     echo "Running container as $USER..."
-    exec "$@"
+    exec "$@ ${CLI_ARGS}"
 else
     echo "Creating non-root user..."
-    getent group $GROUP_ID > /dev/null 2>&1 || groupadd --gid $GROUP_ID comfyui-user
-    id -u $USER_ID > /dev/null 2>&1 || useradd --uid $USER_ID --gid $GROUP_ID --create-home comfyui-user
-    chown --recursive $USER_ID:$GROUP_ID /opt/comfyui
-    chown --recursive $USER_ID:$GROUP_ID /opt/comfyui-manager
+    getent group $PGID > /dev/null 2>&1 || groupadd --gid $PGID comfyui-user
+    id -u $PUID > /dev/null 2>&1 || useradd --uid $PUID --gid $PGID --create-home comfyui-user
+    chown --recursive $PUID:$PGID /opt/comfyui
+    chown --recursive $PUID:$PGID /opt/comfyui-manager
+    chown --recursive $PUID:$PGID /opt/customrequirements
     export PATH=$PATH:/home/comfyui-user/.local/bin
 
     echo "Running container as $USER..."
-    sudo --set-home --preserve-env=PATH --user \#$USER_ID "$@"
+    sudo --set-home --preserve-env=PATH --user \#$PUID "$@" ${CLI_ARGS}
 fi
