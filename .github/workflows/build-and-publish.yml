@@ -137,5 +137,6 @@ jobs:
       # Clean up untagged images
       - name: Clean Up Untagged Images
         uses: dataaxiom/ghcr-cleanup-action@v1.0.16
+        if: ${{ always()}}
         with:
           delete-untagged: true
