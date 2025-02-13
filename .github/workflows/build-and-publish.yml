@@ -122,6 +122,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=ComfyUI Docker
             org.opencontainers.image.authors=TheRealPSV
+          provenance: false
 
 
       # Generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built; it increases supply chain
