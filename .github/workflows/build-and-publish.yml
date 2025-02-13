@@ -140,3 +140,4 @@ jobs:
         if: ${{ always()}}
         with:
           delete-untagged: true
+          delete-tags: 'sha256-*'
