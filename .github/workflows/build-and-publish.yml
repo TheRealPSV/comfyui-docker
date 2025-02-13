@@ -133,7 +133,6 @@ jobs:
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.build-and-push-docker-image.outputs.digest }}
-          push-to-registry: true
       
       # Clean up untagged images
       - name: Clean Up Untagged Images
