@@ -90,12 +90,17 @@ jobs:
             {
               echo 'tags<<EOF'
               echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest"
-              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:latest-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-latest"
               echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
               echo EOF
             } >> "$GITHUB_OUTPUT"
           else
-            echo "tags=${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}" >> "$GITHUB_OUTPUT"
+            {
+              echo 'tags<<EOF'
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-latest"
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
+              echo EOF
+            } >> "$GITHUB_OUTPUT"
           fi
           
       

@@ -168,3 +168,10 @@ Currently, each version is built nightly with the latest stable release of Comfy
 - 2.5.1-cuda11.8-cudnn9
 - 2.5.1-cuda12.1-cudnn9
 - 2.5.1-cuda12.4-cudnn9 (default if you choose the `latest` tag)
+
+If you'd like to pull the latest image based on a specific version of PyTorch, you can pull one of these tags:
+- `2.5.1-cuda11.8-cudnn9-latest`
+- `2.5.1-cuda12.1-cudnn9-latest`
+- `2.5.1-cuda12.4-cudnn9-latest` (same as the `latest` tag)
+
+Versions based on specific builds of ComfyUI and ComfyUI Manager are available as well, though not all combinations of ComfyUI and ComfyUI Manager are, only the latest versions at the time of the nightly build. The naming scheme for specific versions is `<PyTorch version>-cui-<ComfyUI version>-cuim-<ComfyUI Manager version>`. You can browse these tags through the link above.
