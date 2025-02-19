@@ -11,11 +11,13 @@ ARG COMFYUI_VERSION
 ARG COMFYUI_MANAGER_VERSION
 # Installs Git, because ComfyUI and the ComfyUI Manager are installed by cloning their respective Git repositories
 # sudo required for custom user
+# ffmpeg is very useful if doing video work
 # build-essential is useful if you need something like sageattention and triton
 RUN apt update --assume-yes && \
     apt install --assume-yes \
     git \
     sudo \
+    ffmpeg \
     build-essential && \
     # Clean apt cache to reduce image size
     apt clean && \
