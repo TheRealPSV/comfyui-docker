@@ -72,6 +72,7 @@ jobs:
         id: versions
         run: |
           echo "COMFYUI_VERSION=$(git ls-remote --tags --refs https://github.com/comfyanonymous/ComfyUI.git | grep -o 'v.*' | sort -V | tail -1)" >> "$GITHUB_ENV"
+          echo "COMFYUI_NIGHTLY_VERSION=$(git ls-remote https://github.com/comfyanonymous/ComfyUI.git HEAD | cut -f1)" >> "$GITHUB_ENV"
           echo "COMFYUI_MANAGER_VERSION=$(git ls-remote --tags --refs https://github.com/ltdrdata/ComfyUI-Manager.git | grep -o -E '[0-9]+\..*' | sort -V | tail -1)" >> "$GITHUB_ENV"
       
       - name: Check if image exists on GHCR
@@ -81,6 +82,14 @@ jobs:
           registry: ghcr.io
           repository: "${{ env.IMAGE_NAME}}"
           tag: "${{ matrix.PYTORCH_VERSION }}-cui-${{ env.COMFYUI_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
+   
+      - name: Check if nightly image exists on GHCR
+        id: image_check_nightly
+        uses: tyriis/docker-image-tag-exists@v2.1.0
+        with:
+          registry: ghcr.io
+          repository: "${{ env.IMAGE_NAME}}"
+          tag: "${{ matrix.PYTORCH_VERSION }}-cui-nightly-${{ env.COMFYUI_NIGHTLY_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
 
       - name: Set up tags
         id: tags
@@ -103,12 +112,32 @@ jobs:
             } >> "$GITHUB_OUTPUT"
           fi
           
+      - name: Set up nightly tags
+        id: tags_nightly
+        if: ${{ steps.image_check_nightly.outputs.tag == 'not found' }}
+        run: |
+          if [ "${{ matrix.PYTORCH_VERSION }}" = "${{ env.LATEST_PYTORCH_VERSION }}" ]; then
+            {
+              echo 'tags<<EOF'
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:nightly"
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-nightly"
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-nightly-${{ env.COMFYUI_NIGHTLY_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
+              echo EOF
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo 'tags<<EOF'
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-nightly"
+              echo "${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}:${{ matrix.PYTORCH_VERSION }}-cui-nightly-${{ env.COMFYUI_NIGHTLY_VERSION }}-cuim-${{ env.COMFYUI_MANAGER_VERSION }}"
+              echo EOF
+            } >> "$GITHUB_OUTPUT"
+          fi
       
       # Builds the Docker image for ComfyUI; if the build succeeds, it is pushed to the GitHub Container Registry; the "context" parameter specifies
       # the build context, which is the directory that contains the Dockerfile; the tags and labels extracted in the previous step are used to tag
       # and label the image
       - name: Build and Push Docker Image
-        id: build-and-push-docker-image
+        id: build_and_push_docker_image
         uses: docker/build-push-action@v6
         if: ${{ steps.image_check.outputs.tag == 'not found' }}
         with:
@@ -124,7 +153,6 @@ jobs:
             org.opencontainers.image.authors=TheRealPSV
           provenance: false
 
-
       # Generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built; it increases supply chain
       # security for people who consume the image
       - name: Generate Artifact Attestation
@@ -132,7 +160,36 @@ jobs:
         if: ${{ steps.image_check.outputs.tag == 'not found' }}
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
-          subject-digest: ${{ steps.build-and-push-docker-image.outputs.digest }}
+          subject-digest: ${{ steps.build_and_push_docker_image.outputs.digest }}
+      
+      # Builds the Docker image for ComfyUI; if the build succeeds, it is pushed to the GitHub Container Registry; the "context" parameter specifies
+      # the build context, which is the directory that contains the Dockerfile; the tags and labels extracted in the previous step are used to tag
+      # and label the image
+      - name: Build and Push Docker Image Nightly
+        id: build_and_push_docker_image_nightly
+        uses: docker/build-push-action@v6
+        if: ${{ steps.image_check_nightly.outputs.tag == 'not found' }}
+        with:
+          context: .
+          push: true
+          build-args: |
+            PYTORCH_IMG_VERSION=${{ matrix.PYTORCH_VERSION }}
+            COMFYUI_VERSION=master
+            COMFYUI_MANAGER_VERSION=${{ env.COMFYUI_MANAGER_VERSION }}
+          tags: ${{ steps.tags_nightly.outputs.tags }}
+          labels: |
+            org.opencontainers.image.title=ComfyUI Docker
+            org.opencontainers.image.authors=TheRealPSV
+          provenance: false
+
+      # Generates an artifact attestation for the image, which is an unforgeable statement about where and how it was built; it increases supply chain
+      # security for people who consume the image
+      - name: Generate Artifact Attestation Nightly
+        uses: actions/attest-build-provenance@v1
+        if: ${{ steps.image_check_nightly.outputs.tag == 'not found' }}
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
+          subject-digest: ${{ steps.build_and_push_docker_image_nightly.outputs.digest }}
       
       # Clean up untagged images
       - name: Clean Up Untagged Images

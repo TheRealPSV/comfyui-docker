@@ -174,4 +174,6 @@ If you'd like to pull the latest image based on a specific version of PyTorch, y
 - `2.5.1-cuda12.1-cudnn9-latest`
 - `2.5.1-cuda12.4-cudnn9-latest` (same as the `latest` tag)
 
+Similarly, the latest master build of ComfyUI at time of building is available with the `nightly` tag.
+
 Versions based on specific builds of ComfyUI and ComfyUI Manager are available as well, though not all combinations of ComfyUI and ComfyUI Manager are, only the latest versions at the time of the nightly build. The naming scheme for specific versions is `<PyTorch version>-cui-<ComfyUI version>-cuim-<ComfyUI Manager version>`. You can browse these tags through the link above.
