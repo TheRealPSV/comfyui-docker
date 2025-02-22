@@ -28,7 +28,7 @@ services:
       - ./sd-comfyui-data/workflows:/opt/comfyui/user/default/workflows
       - ./sd-comfyui-data/manager:/opt/comfyui/user/default/ComfyUI-Manager
       - ./sd-comfyui-data/customrequirements:/opt/customrequirements
-      - ./sd-comfyui-data/output:/root/ComfyUI/output
+      - ./sd-comfyui-data/output:/opt/comfyui/output
     stop_signal: SIGKILL
     tty: true
     restart: unless-stopped
