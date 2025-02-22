@@ -53,19 +53,24 @@ services:
 After saving the file you can simply run `docker compose up -d` to run the container.
 
 #### Volumes
-- models: where your model files are stored
-- custom_nodes: where your custom_nodes are saved to
-- pipcache: caches saved python pip modules to disk to speed up restarts
-- input: where any input files are saved by comfyui
-- workflows: your saved workflow files
-- manager: ComfyUI Manager configuration
-- customrequirements: ComfyUI Manager's "Install PIP Module" option doesn't work properly in this container. Instead, you can place your requested modules in a requirements.txt file in this folder, matching the [pip requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/) (typically just the name of the module, one per line), and the container will install it for you as it boots up.
-- output: Your ComfyUI outputs
+| Folder             | Description                                          |
+|--------------------|------------------------------------------------------|
+| models             | Where your _model_ files are stored.                 |
+| custom_nodes       | Where your _custom nodes_ are stored.                |
+| workflows          | Where your _workflow_ files are stored.              |
+| output             | Where your _output files_ are stored.                |
+| input              | Where any _input files_ are saved by ComfyUI.        |
+| manager            | Where the _ComfyUI Manager_ configuration is stored. |
+| customrequirements | ComfyUI Manager's "Install PIP Module" option doesn't work properly in this container. Instead, you can place your desired modules in a _requirements.txt_ file in this folder, matching the [pip requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/) (typically just the name of the module, one per line), and the container will install it for you as it boots up. |
+| pipcache           | Caches saved Python PIP Modules to disk to speed up restarts. |
 
 #### Environment Variables (Optional)
-- PUID: the user id of your host machine linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user. You can find this by running `id -u`.
-- PGID: the group id of your host machine linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user's group. You can find this by running `id -g`.
-- CLI_ARGS: any arguments you want to pass to ComfyUI when it runs.
+
+| Env Variable   | Description                                             |
+|----------------|---------------------------------------------------------|
+| CLI_ARGS       | Any arguments you want to pass to ComfyUI when it runs. |
+| PUID           | The _user id_ of your host machine's linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user. You can find this by running `id -u`. |
+| PGID           | The _group id_ of your host machine's linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user's group. You can find this by running `id -g`. |
 
 ### Docker CLI
 
