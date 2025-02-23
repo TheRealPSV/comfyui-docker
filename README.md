@@ -25,8 +25,7 @@ services:
       - ./sd-comfyui-data/custom_nodes:/opt/comfyui/custom_nodes
       - ./sd-comfyui-data/pipcache:/root/.cache/pip
       - ./sd-comfyui-data/input:/opt/comfyui/input
-      - ./sd-comfyui-data/workflows:/opt/comfyui/user/default/workflows
-      - ./sd-comfyui-data/manager:/opt/comfyui/user/default/ComfyUI-Manager
+      - ./sd-comfyui-data/userdata:/opt/comfyui/user/default
       - ./sd-comfyui-data/customrequirements:/opt/customrequirements
       - ./sd-comfyui-data/output:/opt/comfyui/output
     stop_signal: SIGKILL
@@ -57,10 +56,9 @@ After saving the file you can simply run `docker compose up -d` to run the conta
 |--------------------|------------------------------------------------------|
 | models             | Where your _model_ files are stored.                 |
 | custom_nodes       | Where your _custom nodes_ are stored.                |
-| workflows          | Where your _workflow_ files are stored.              |
 | output             | Where your _output files_ are stored.                |
 | input              | Where any _input files_ are saved by ComfyUI.        |
-| manager            | Where the _ComfyUI Manager_ configuration is stored. |
+| userdata           | Where your settings for ComfyUI and ComfyUI Manager are stored, as well as your workflows. |
 | customrequirements | ComfyUI Manager's "Install PIP Module" option doesn't work properly in this container. Instead, you can place your desired modules in a _requirements.txt_ file in this folder, matching the [pip requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/) (typically just the name of the module, one per line), and the container will install it for you as it boots up. |
 | pipcache           | Caches saved Python PIP Modules to disk to speed up restarts. |
 
