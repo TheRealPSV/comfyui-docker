@@ -21,6 +21,7 @@ jobs:
   # The `build-and-publish` builds the Docker image, and publishes it to the GitHub Container Registry
   build-and-publish:
     strategy:
+      fail-fast: false
       matrix:
         PYTORCH_VERSION:
           - 2.5.1-cuda11.8-cudnn9
