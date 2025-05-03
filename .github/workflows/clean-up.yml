@@ -18,8 +18,8 @@ env:
 # This workflow has a single job, which builds the Docker image and publishes it to the GitHub Container Registry
 jobs:
 
-  # The `build-and-publish` builds the Docker image, and publishes it to the GitHub Container Registry
-  build-and-publish:
+  # The `clean-up` cleans up old images
+  clean-up:
     strategy:
       fail-fast: false
     # This job will run on an Ubuntu GitHub runner, which is a good default choice and it comes with Docker pre-installed
