@@ -52,23 +52,23 @@ services:
 After saving the file you can simply run `docker compose up -d` to run the container.
 
 #### Volumes
-| Folder             | Description                                          |
-|--------------------|------------------------------------------------------|
-| models             | Where your _model_ files are stored.                 |
-| custom_nodes       | Where your _custom nodes_ are stored.                |
-| output             | Where your _output files_ are stored.                |
-| input              | Where any _input files_ are saved by ComfyUI.        |
-| userdata           | Where your settings for ComfyUI and ComfyUI Manager are stored, as well as your workflows. |
+| Folder             | Description                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| models             | Where your _model_ files are stored.                                                                                                                                                                                                                                                                                                                                                                            |
+| custom_nodes       | Where your _custom nodes_ are stored.                                                                                                                                                                                                                                                                                                                                                                           |
+| output             | Where your _output files_ are stored.                                                                                                                                                                                                                                                                                                                                                                           |
+| input              | Where any _input files_ are saved by ComfyUI.                                                                                                                                                                                                                                                                                                                                                                   |
+| userdata           | Where your settings for ComfyUI and ComfyUI Manager are stored, as well as your workflows.                                                                                                                                                                                                                                                                                                                      |
 | customrequirements | ComfyUI Manager's "Install PIP Module" option doesn't work properly in this container. Instead, you can place your desired modules in a _requirements.txt_ file in this folder, matching the [pip requirements file format](https://pip.pypa.io/en/stable/reference/requirements-file-format/) (typically just the name of the module, one per line), and the container will install it for you as it boots up. |
-| pipcache           | Caches saved Python PIP Modules to disk to speed up restarts. |
+| pipcache           | Caches saved Python PIP Modules to disk to speed up restarts.                                                                                                                                                                                                                                                                                                                                                   |
 
 #### Environment Variables (Optional)
 
-| Env Variable   | Description                                             |
-|----------------|---------------------------------------------------------|
-| CLI_ARGS       | Any arguments you want to pass to ComfyUI when it runs. |
-| PUID           | The _user id_ of your host machine's linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user. You can find this by running `id -u`. |
-| PGID           | The _group id_ of your host machine's linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user's group. You can find this by running `id -g`. |
+| Env Variable | Description                                                                                                                                                                                           |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| CLI_ARGS     | Any arguments you want to pass to ComfyUI when it runs.                                                                                                                                               |
+| PUID         | The _user id_ of your host machine's linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user. You can find this by running `id -u`.          |
+| PGID         | The _group id_ of your host machine's linux user, if you want the container to attempt to use your user so the files in volumes are owned by your user's group. You can find this by running `id -g`. |
 
 ### Docker CLI
 
@@ -167,15 +167,13 @@ docker run \
 
 You can browse different variations and versions of this image here: https://github.com/therealpsv/comfyui-docker/pkgs/container/comfyui-docker/versions?filters%5Bversion_type%5D=tagged
 
-Currently, each version is built nightly with the latest stable release of ComfyUI and ComfyUI Manager if either is updated. The images are currently based on 3 versions of the official PyTorch image:
-- 2.5.1-cuda11.8-cudnn9
-- 2.5.1-cuda12.1-cudnn9
-- 2.5.1-cuda12.4-cudnn9 (default if you choose the `latest` tag)
+Currently, each version is built nightly with the latest stable release of ComfyUI and ComfyUI Manager if either is updated. The images are currently based on 2 versions of the official PyTorch image:
+- 2.7.0-cuda11.8-cudnn9
+- 2.7.0-cuda12.8-cudnn9 (default if you choose the `latest` tag)
 
 If you'd like to pull the latest image based on a specific version of PyTorch, you can pull one of these tags:
-- `2.5.1-cuda11.8-cudnn9-latest`
-- `2.5.1-cuda12.1-cudnn9-latest`
-- `2.5.1-cuda12.4-cudnn9-latest` (same as the `latest` tag)
+- `2.7.0-cuda11.8-cudnn9-latest`
+- `2.7.0-cuda12.8-cudnn9-latest` (same as the `latest` tag)
 
 Similarly, the latest master build of ComfyUI at time of building is available with the `nightly` tag.
 

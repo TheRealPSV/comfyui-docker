@@ -1,0 +1,69 @@
+
+# A workflow, which builds the ComfyUI Docker image and publishes it to the GitHub Container Registry
+name: Clean Up Docker Images
+
+# Configures this workflow to run when a tag was pushed to the repository that matches the pattern "v[0-9]+.[0-9]+.[0-9]+", which is a semantic
+# versioning pattern; this token will be created when a new release is created; the release event cannot be used, because the docker/metadata-action
+# action does not support the release event
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * 0"
+
+# Defines two custom environment variables for the host name of the registry (ghcr.io for the GitHub Container Registry) and the name of the image,
+# which is set to the name of the repository
+env:
+  REGISTRY: ghcr.io
+
+# This workflow has a single job, which builds the Docker image and publishes it to the GitHub Container Registry
+jobs:
+
+  # The `build-and-publish` builds the Docker image, and publishes it to the GitHub Container Registry
+  build-and-publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        PYTORCH_VERSION:
+          - 2.7.0-cuda11.8-cudnn9
+          - 2.7.0-cuda12.8-cudnn9
+    env:
+      LATEST_PYTORCH_VERSION: 2.7.0-cuda12.8-cudnn9
+    # This job will run on an Ubuntu GitHub runner, which is a good default choice and it comes with Docker pre-installed
+    runs-on: ubuntu-latest
+
+    # Sets the permissions granted to the `GITHUB_TOKEN` for the actions in this job
+    permissions:
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
+
+    # This job 1) checks out the repository, 2) logs in to the GitHub Container Registry, 3) extracts metadata for the Docker image, 4) builds and
+    # pushes the Docker image, and 5) generates an artifact attestation for the image
+    steps:
+      # Remove tags from nightly images older than a week
+      - name: Clean Up Nightly Images
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.16
+        if: ${{ always()}}
+        with:
+          older-than: 1 week
+          delete-tags: ${{ matrix.PYTORCH_VERSION }}-cui-nightly-*
+          keep-n-tagged: 1
+      
+      # Remove tags from release images older than 3 months
+      - name: Clean Up Release Images
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.16
+        if: ${{ always()}}
+        with:
+          older-than: 3 months
+          delete-tags: ${{ matrix.PYTORCH_VERSION }}-cui-*
+          exclude-tags: ${{ matrix.PYTORCH_VERSION }}-cui-nightly-*
+          keep-n-tagged: 1
+      
+      # Clean up untagged images
+      - name: Clean Up Untagged Images
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.16
+        if: ${{ always()}}
+        with:
+          delete-untagged: true
+          delete-tags: 'sha256-*'

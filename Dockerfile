@@ -1,4 +1,4 @@
-ARG PYTORCH_IMG_VERSION="2.5.1-cuda12.4-cudnn9"
+ARG PYTORCH_IMG_VERSION="2.7.0-cuda12.8-cudnn9"
 # Note you can grab the tag you should use with this: $(git ls-remote --tags --refs https://github.com/comfyanonymous/ComfyUI.git | grep -o 'v.*' | sort -V | tail -1)
 ARG COMFYUI_VERSION="master" 
 # Note you can grab the tag you should use with this: $(git ls-remote --tags --refs https://github.com/ltdrdata/ComfyUI-Manager.git | grep -o 'v.*' | sort -V | tail -1)
