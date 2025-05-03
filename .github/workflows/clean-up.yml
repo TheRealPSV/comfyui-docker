@@ -22,12 +22,6 @@ jobs:
   build-and-publish:
     strategy:
       fail-fast: false
-      matrix:
-        PYTORCH_VERSION:
-          - 2.7.0-cuda11.8-cudnn9
-          - 2.7.0-cuda12.8-cudnn9
-    env:
-      LATEST_PYTORCH_VERSION: 2.7.0-cuda12.8-cudnn9
     # This job will run on an Ubuntu GitHub runner, which is a good default choice and it comes with Docker pre-installed
     runs-on: ubuntu-latest
 
@@ -38,8 +32,6 @@ jobs:
       attestations: write
       id-token: write
 
-    # This job 1) checks out the repository, 2) logs in to the GitHub Container Registry, 3) extracts metadata for the Docker image, 4) builds and
-    # pushes the Docker image, and 5) generates an artifact attestation for the image
     steps:
       # Remove tags from nightly images older than a week
       - name: Clean Up Nightly Images
@@ -47,7 +39,7 @@ jobs:
         if: ${{ always()}}
         with:
           older-than: 1 week
-          delete-tags: ${{ matrix.PYTORCH_VERSION }}-cui-nightly-*
+          delete-tags: '*-cui-nightly-*'
           keep-n-tagged: 1
       
       # Remove tags from release images older than 3 months
@@ -56,8 +48,8 @@ jobs:
         if: ${{ always()}}
         with:
           older-than: 3 months
-          delete-tags: ${{ matrix.PYTORCH_VERSION }}-cui-*
-          exclude-tags: ${{ matrix.PYTORCH_VERSION }}-cui-nightly-*
+          delete-tags: '*-cui-*'
+          exclude-tags: '*-cui-nightly-*'
           keep-n-tagged: 1
       
       # Clean up untagged images
