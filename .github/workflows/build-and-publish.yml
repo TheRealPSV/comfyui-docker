@@ -190,4 +190,11 @@ jobs:
         with:
           subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME}}
           subject-digest: ${{ steps.build_and_push_docker_image_nightly.outputs.digest }}
-
+      
+      # Clean up untagged images
+      - name: Clean Up Untagged Images
+        uses: dataaxiom/ghcr-cleanup-action@v1.0.16
+        if: ${{ always()}}
+        with:
+          delete-untagged: true
+          delete-tags: 'sha256-*'
